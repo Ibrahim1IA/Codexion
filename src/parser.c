@@ -67,7 +67,7 @@ int is_args_valid(int ac, char **av)
         printf("ARGUMENT ERROR: Invalid arguments.\n");
         return (0);
     }
-    return (1);
+    return (0);
 }
 
 int parse_args(t_params *params, int ac, char **av)
@@ -82,15 +82,27 @@ int parse_args(t_params *params, int ac, char **av)
     params->time_to_refactor = atoi(av[5]);
     params->compiles_required = atoi(av[6]);
     params->dongle_cooldown = atoi(av[7]);
-    params->scheduler_type = atoi(av[8]);
+    params->scheduler_type = *av[8];
     return (0);
 }
 
 int main(int ac, char **av)
 {
     int i = 0;
-    t_params params;
-    if (!parse_args(&params, ac, av));
-    return 1;
-    printf("%d\t %lld %d\t %lld %lld\t %lld %lld\t %d", params.compiles_required, params.dongle_cooldown, params.num_coders, params.time_to_refactor, params.time_to_burnout, params.time_to_compile, params.time_to_debug, params.scheduler_type);
+    t_params *params;
+    params = malloc(sizeof(t_params));
+    if (parse_args(params, ac, av) == 1)
+        return 1;
+    printf("Number of coders: %d\n", params->num_coders);
+    printf("Time to burnout: %lld\n", params->time_to_burnout);
+    printf("Time to compile: %lld\n", params->time_to_compile);
+    printf("Time to debug: %lld\n", params->time_to_debug);
+    printf("Time to refactor: %lld\n", params->time_to_refactor);
+    printf("Compiles required: %d\n", params->compiles_required);
+    printf("Dongle cooldown: %lld\n", params->dongle_cooldown);
+    if (params->scheduler_type == SCH_FIFO)
+        printf("Scheduler type: FIFO\n");
+    else if (params->scheduler_type == SCH_EDF)
+        printf("Scheduler type: EDF\n");
+    return 0;
 }

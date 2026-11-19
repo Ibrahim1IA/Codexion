@@ -77,6 +77,13 @@ typedef struct s_table {
     pthread_t       monitor_thread;   // Thread moniteur
 }   t_table;
 
+// Fonction sur les dongles
+int init_dongles(t_table *table);
+void take_dongle(t_coder *coder, t_dongle *dongle);
+bool acquire_both_dongles(t_coder *coder);
+void release_dongles(t_coder *coder);
+
+// Fonction sur les coders
 
 int min_heap_push(t_min_heap *heap, t_request *request, t_scheduler sch_type);
 
