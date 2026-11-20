@@ -25,6 +25,7 @@ typedef struct s_params{
     long long dongle_cooldown;
     t_scheduler scheduler_type;
 } t_params;
+
 // Élément individuel d'attente dans le Min-Heap
 typedef struct s_request
 {
@@ -65,7 +66,7 @@ typedef struct s_coder{
     struct s_table  *table;           // Référence vers la structure globale    
 } t_coder;
 
-// Context global de la simulation (Remplace les variables globales interdites
+// Context global de la simulation (Remplace les variables globales interdites)
 typedef struct s_table {
     t_params        params;
     long long       start_time;       // Horodatage du début de la simulation
@@ -82,10 +83,23 @@ int init_dongles(t_table *table);
 void take_dongle(t_coder *coder, t_dongle *dongle);
 bool acquire_both_dongles(t_coder *coder);
 void release_dongles(t_coder *coder);
+void destroy_dongles(t_table *table);
+
+// parser
+int parse_args(t_params *params, int ac, char **av);
+
+// Fonction sur le moniteur
+void *monitor_routine(void *arg);
 
 // Fonction sur les coders
-
+void * coder_routine(void *arg);
+int init_coder(t_table *table);
 int min_heap_push(t_min_heap *heap, t_request *request, t_scheduler sch_type);
 
+// Utils
+long long get_current_time(t_table *table);
+void print_log(t_coder *coder, const char *message);
 int should_stop_now(t_table *table);
+void clean_exit(t_table *table);
+
 #endif

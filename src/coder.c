@@ -1,5 +1,4 @@
 #include "codexion.h"
-
 static void setup_coder_struct(t_table *table, int i)
 {
     t_coder *coder;
@@ -17,7 +16,7 @@ static void setup_coder_struct(t_table *table, int i)
     table->coders[i].table = table;
 }
 
-void init_coder(t_table *table)
+int init_coder(t_table *table)
 {
     int i;
 
@@ -28,4 +27,13 @@ void init_coder(t_table *table)
     table->start_time = get_current_time(table);
     for (i = 0; i < table->params.num_coders; i++)
         setup_coder_struct(table, i);
+
+    i = 0;
+    while (i < table->params.num_coders)
+    {
+        if (pthread_create(&table->coders[i].thread_id, NULL, coder_routine, &table->coders[i]) != 0)
+            return (0);
+        i++;
+    }
+    return (1);
 }

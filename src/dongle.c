@@ -51,6 +51,36 @@ int init_dongles(t_table *table)
 }
 
 
+
+void destroy_dongles(t_table *table)
+{
+    int i;
+
+    if (!table || !table->dongles)
+        return ;
+    i = 0;
+    while (i < table->params.num_coders)
+    {
+        // 1. Destruction du mutex propre au dongle
+        pthread_mutex_destroy(&table->dongles[i].mutex);
+
+        // 2. Destruction de la variable de condition
+        pthread_cond_destroy(&table->dongles[i].cond);
+
+        // 3. Libération de la mémoire du Min-Heap associateur
+        if (table->dongles[i].waiting_queue.data)
+        {
+            free(table->dongles[i].waiting_queue.data);
+            table->dongles[i].waiting_queue.data = NULL;
+        }
+        i++;
+    }
+
+    // 4. Libération du tableau principal des dongles
+    free(table->dongles);
+    table->dongles = NULL;
+}
+
 void take_dongle(t_coder *coder, t_dongle *dongle)
 {
     t_request request;
