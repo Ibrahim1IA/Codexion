@@ -27,7 +27,7 @@ void *monitor_routine(void *arg)
     long long last_compile;
 
     table = (t_table *)arg;
-    while (!is_simulation_ended(table))
+    while (!should_stop_now(table))
     {
         i = 0;
         while (i < table->params.num_coders)

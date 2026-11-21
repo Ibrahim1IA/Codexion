@@ -22,7 +22,7 @@ int init_coder(t_table *table)
 
     table->coders = malloc(sizeof(t_coder) * table->params.num_coders);
     if (!table->coders)
-        return;
+        return (0);
     
     table->start_time = get_current_time(table);
     for (i = 0; i < table->params.num_coders; i++)

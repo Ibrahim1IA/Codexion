@@ -82,6 +82,11 @@ int parse_args(t_params *params, int ac, char **av)
     params->time_to_refactor = atoi(av[5]);
     params->compiles_required = atoi(av[6]);
     params->dongle_cooldown = atoi(av[7]);
-    params->scheduler_type = *av[8];
+    if (strcmp(av[8], "fifo") == 0)
+        params->scheduler_type = SCH_FIFO;
+    else if (strcmp(av[8], "edf") == 0)
+        params->scheduler_type = SCH_EDF;
+    else
+        return (0);
     return (1);
 }

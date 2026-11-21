@@ -4,7 +4,7 @@ static void precise_sleep(long long duration, t_table *table)
     long long start_time;
 
     start_time = get_current_time(table);
-    while (!is_simulation_ended(table))
+    while (!should_stop_now(table))
     {
         if (get_current_time(table) - start_time >= duration)
             break ;

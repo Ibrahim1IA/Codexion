@@ -163,12 +163,12 @@ bool acquire_both_dongles(t_coder *coder)
 
     if (coder->left_dongle->id < coder->right_dongle->id)
     {
-        first = &coder->left_dongle;
-        second = &coder->right_dongle;
+        first = coder->left_dongle;
+        second = coder->right_dongle;
     }
     else{
-        second = &coder->left_dongle;
-        first = &coder->right_dongle;
+        second = coder->left_dongle;
+        first = coder->right_dongle;
     }
     take_dongle(coder, first);
     if (should_stop_now(coder->table))

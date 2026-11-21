@@ -1,4 +1,5 @@
 #include "codexion.h"
+
 void clean_exit(t_table *table)
 {
     int i;
@@ -36,7 +37,7 @@ int main(int argc, char **argv)
     if (parse_args(&table.params, argc, argv) == 0)
         return (1);
     // Initialisation et lancement de la simulation
-    if (!init_simulation(&table, &table.params))
+    if (!init_simulation(&table, table.params))
         return (1);
 
     // Attente et nettoyage de la mémoire après l'arrêt de la simulation

@@ -42,7 +42,6 @@ typedef struct s_min_heap
     int capacity;
 } t_min_heap;
 
-
 // Structure représentant un Dongle USB
 typedef struct s_dongle{
     int             id;
@@ -94,12 +93,22 @@ void *monitor_routine(void *arg);
 // Fonction sur les coders
 void * coder_routine(void *arg);
 int init_coder(t_table *table);
+
+// Fonction sur le Min-Heap
+int min_heap_init(t_min_heap *heap, int capacity);
+void min_heap_destroy(t_min_heap *heap);
 int min_heap_push(t_min_heap *heap, t_request *request, t_scheduler sch_type);
+int min_heap_pop(t_min_heap *heap, t_scheduler sch_type);
+
+
+// initialisation de la simulation
+int init_simulation(t_table *table,  t_params params);
 
 // Utils
 long long get_current_time(t_table *table);
 void print_log(t_coder *coder, const char *message);
 int should_stop_now(t_table *table);
-void clean_exit(t_table *table);
+void	ft_swap(t_request *a, t_request *b);
+bool is_higher_priority(t_request *a, t_request *b, t_scheduler sch_type);
 
 #endif

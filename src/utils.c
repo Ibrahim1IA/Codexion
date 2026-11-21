@@ -1,5 +1,15 @@
 #include "codexion.h"
 
+long get_time_in_ms(void)
+{
+    struct timeval  tv;
+    long long       milliseconds;
+
+    gettimeofday(&tv, NULL);
+    milliseconds = (tv.tv_sec * 1000LL) + (tv.tv_usec / 1000);
+    return (milliseconds);
+}
+
 /*
 ** Renvoie le temps écoulé en ms depuis le début de la simulation
 */
@@ -18,25 +28,36 @@ int should_stop_now(t_table *table)
     return (result);
 }
 
-long get_time_in_ms(void)
+void	ft_swap(t_request *a, t_request *b)
 {
-    struct timeval  tv;
-    long long       milliseconds;
+	t_request	*temp;
 
-    gettimeofday(&tv, NULL);
-    milliseconds = (tv.tv_sec * 1000LL) + (tv.tv_usec / 1000);
-    return (milliseconds);
+	temp = a;
+	a = b;
+	b = temp;
 }
 
-void	ft_swap(t_coder **a, t_coder **b)
+bool is_higher_priority(t_request *a, t_request *b, t_scheduler sch_type)
 {
-	t_coder	*temp;
-
-	temp = *a;
-	*a = *b;
-	*b = temp;
+    if (sch_type == SCH_EDF)
+    {
+        if (a->deadline < b->deadline)
+            return true;
+        else if (a->deadline == b->deadline)
+            return a->request_time < b->request_time;
+        else
+            return false;
+    }
+    else // SCH_FIFO
+    {
+        if (a->request_time < b->request_time)
+            return true;
+        else if (a->request_time == b->request_time)
+            return a->deadline < b->deadline;
+        else
+            return false;
+    }
 }
-
 void print_log(t_coder *coder, const char *message)
 {
     long long timestamp;
