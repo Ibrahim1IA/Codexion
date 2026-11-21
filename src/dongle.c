@@ -185,7 +185,7 @@ bool acquire_both_dongles(t_coder *coder)
     // 1 seul coder : un seul dongle, il ne peut pas compiler -> il attend le burnout
     if (coder->left_dongle->id == coder->right_dongle->id)
     {
-        if (take_dongle(coder, coder->left_dongle));
+        if (take_dongle(coder, coder->left_dongle))
         {
             while (!should_stop_now(coder->table))
                 usleep(500);

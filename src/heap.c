@@ -77,6 +77,7 @@ int min_heap_pop(t_min_heap *heap, t_scheduler sch_type)
         fprintf(stderr, "ERROR: Heap is empty. Cannot pop request.\n");
         return (1);
     }
+    (void)first_request;
     first_request = heap->data[0];
     last_request = heap->data[heap->size - 1];
     heap->data[0] = last_request;

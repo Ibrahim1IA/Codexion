@@ -1,0 +1,41 @@
+{
+    "tasks": [
+        {
+            "type": "cppbuild",
+            "label": "build codexion (debug)",
+            "command": "/usr/bin/cc",
+            "args": [
+                "-fdiagnostics-color=always",
+                "-g",
+                "-O0",
+                "-Wall",
+                "-Wextra",
+                "-pthread",
+                "-I${workspaceFolder}/includes",
+                "${workspaceFolder}/src/main.c",
+                "${workspaceFolder}/src/parser.c",
+                "${workspaceFolder}/src/dongle.c",
+                "${workspaceFolder}/src/heap.c",
+                "${workspaceFolder}/src/utils.c",
+                "${workspaceFolder}/src/coder.c",
+                "${workspaceFolder}/src/init.c",
+                "${workspaceFolder}/src/monitor.c",
+                "${workspaceFolder}/src/routine.c",
+                "-o",
+                "${workspaceFolder}/codexion"
+            ],
+            "options": {
+                "cwd": "${workspaceFolder}"
+            },
+            "problemMatcher": [
+                "$gcc"
+            ],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "detail": "Compile tous les .c de src/ avec les symboles de debug."
+        }
+    ],
+    "version": "2.0.0"
+}
