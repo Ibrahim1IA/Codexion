@@ -48,12 +48,8 @@ void * coder_routine(void *arg)
 
     while (!should_stop_now(coder->table))
     {
-        acquire_both_dongles(coder);
-        if (should_stop_now(coder->table))
-        {
-            release_dongles(coder);
+        if (!acquire_both_dongles(coder))
             break;
-        }
         coder_compile(coder);
         release_dongles(coder);
         if (should_stop_now(coder->table))

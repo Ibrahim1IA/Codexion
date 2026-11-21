@@ -30,11 +30,11 @@ int should_stop_now(t_table *table)
 
 void	ft_swap(t_request *a, t_request *b)
 {
-	t_request	*temp;
+	t_request	temp;
 
-	temp = a;
-	a = b;
-	b = temp;
+	temp = *a;
+	*a = *b;
+	*b = temp;
 }
 
 bool is_higher_priority(t_request *a, t_request *b, t_scheduler sch_type)
@@ -70,6 +70,6 @@ void print_log(t_coder *coder, const char *message)
         timestamp = get_current_time(coder->table);
         printf("%lld %d %s\n", timestamp, coder->id, message);
     }
-    
+    pthread_mutex_unlock(&coder->table->end_mutex);
     pthread_mutex_unlock(&coder->table->log_mutex);
 }

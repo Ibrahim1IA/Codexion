@@ -79,7 +79,7 @@ typedef struct s_table {
 
 // Fonction sur les dongles
 int init_dongles(t_table *table);
-void take_dongle(t_coder *coder, t_dongle *dongle);
+bool take_dongle(t_coder *coder, t_dongle *dongle);
 bool acquire_both_dongles(t_coder *coder);
 void release_dongles(t_coder *coder);
 void destroy_dongles(t_table *table);
@@ -110,5 +110,5 @@ void print_log(t_coder *coder, const char *message);
 int should_stop_now(t_table *table);
 void	ft_swap(t_request *a, t_request *b);
 bool is_higher_priority(t_request *a, t_request *b, t_scheduler sch_type);
-
+long get_time_in_ms(void);
 #endif

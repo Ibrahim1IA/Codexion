@@ -16,7 +16,7 @@ static void get_timeout_timespec(struct timespec *ts, long long ms_from_now)
 
 int heap_init(t_min_heap *heap, int capacity)
 {
-    heap->data = malloc(sizeof(t_request *) * capacity);
+    heap->data = malloc(sizeof(t_request) * capacity);
     if (!heap->data)
     {
 		fprintf(stderr, "ERROR: Failed to initialize dongle heap.\n");
@@ -32,7 +32,7 @@ int init_dongles(t_table *table)
 {
     int i;
 
-    table->dongles = malloc(sizeof(t_dongle *) * table->params.num_coders);
+    table->dongles = malloc(sizeof(t_dongle) * table->params.num_coders);
     if (!table->dongles)
         return (0);
     
@@ -67,7 +67,6 @@ void destroy_dongles(t_table *table)
         // 2. Destruction de la variable de condition
         pthread_cond_destroy(&table->dongles[i].cond);
 
-        // 3. Libération de la mémoire du Min-Heap associateur
         if (table->dongles[i].waiting_queue.data)
         {
             free(table->dongles[i].waiting_queue.data);
@@ -81,7 +80,7 @@ void destroy_dongles(t_table *table)
     table->dongles = NULL;
 }
 
-void take_dongle(t_coder *coder, t_dongle *dongle)
+bool take_dongle(t_coder *coder, t_dongle *dongle)
 {
     t_request request;
     long long now;
@@ -105,7 +104,7 @@ void take_dongle(t_coder *coder, t_dongle *dongle)
         {
             pthread_mutex_unlock(&coder->table->end_mutex);
             pthread_mutex_unlock(&dongle->mutex);
-            return;
+            return (false);
         }
         pthread_mutex_unlock(&coder->table->end_mutex);
 
@@ -124,7 +123,7 @@ void take_dongle(t_coder *coder, t_dongle *dongle)
                 // Affichage sérialisé du log sous le format requis : "<timestamp> X has taken a dongle"
                 print_log(coder, "has taken a dongle");
                 pthread_mutex_unlock(&dongle->mutex);
-                return;
+                return (true);
             }
         // Cas B : Le dongle est libre mais encore en période de cooldown
         else if (dongle->is_available && now < dongle->cooldown_until)
@@ -148,34 +147,6 @@ void take_dongle(t_coder *coder, t_dongle *dongle)
     }
 }
 
-bool acquire_both_dongles(t_coder *coder)
-{
-    t_dongle *first;
-    t_dongle *second;
-
-    if (coder->left_dongle->id == coder->right_dongle->id)
-    {
-        take_dongle(coder, coder->left_dongle);
-        if (!should_stop_now(coder->table))
-            usleep(1000);
-        return (false);
-    }
-
-    if (coder->left_dongle->id < coder->right_dongle->id)
-    {
-        first = coder->left_dongle;
-        second = coder->right_dongle;
-    }
-    else{
-        second = coder->left_dongle;
-        first = coder->right_dongle;
-    }
-    take_dongle(coder, first);
-    if (should_stop_now(coder->table))
-        return (false);
-    take_dongle(coder, second);
-    return (!should_stop_now(coder->table));
-}
 
 static   void release_one(t_dongle *dongle, long long now, long long cooldown_time)
 {
@@ -204,4 +175,42 @@ void release_dongles(t_coder *coder)
             release_one(dongles[i], now, coder->table->params.dongle_cooldown);
         }
     }
+}
+
+bool acquire_both_dongles(t_coder *coder)
+{
+    t_dongle *first;
+    t_dongle *second;
+
+    // 1 seul coder : un seul dongle, il ne peut pas compiler -> il attend le burnout
+    if (coder->left_dongle->id == coder->right_dongle->id)
+    {
+        if (take_dongle(coder, coder->left_dongle));
+        {
+            while (!should_stop_now(coder->table))
+                usleep(500);
+            release_one(coder->left_dongle, get_current_time(coder->table),
+                coder->table->params.dongle_cooldown);
+        }
+        return false;
+    }
+
+    if (coder->left_dongle->id < coder->right_dongle->id)
+    {
+        first = coder->left_dongle;
+        second = coder->right_dongle;
+    }
+    else{
+        second = coder->left_dongle;
+        first = coder->right_dongle;
+    }
+    if (!take_dongle(coder, first))
+        return (false);
+    if (!take_dongle(coder, second))
+    {
+        release_one(first, get_current_time(coder->table),
+            coder->table->params.dongle_cooldown);
+        return (false);
+    }
+    return (true);
 }

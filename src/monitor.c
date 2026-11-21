@@ -18,6 +18,22 @@ static int check_all_full(t_table *table)
     return (full_count == table->params.num_coders);
 }
 
+static void stop_simulation(t_table *table)
+{
+    int i;
+
+    pthread_mutex_lock(&table->end_mutex);
+    table->simulation_ended = 1;
+    pthread_mutex_unlock(&table->end_mutex);
+    i = 0;
+    while (i < table->params.num_coders)
+    {
+        pthread_mutex_lock(&table->dongles[i].mutex);
+        pthread_cond_broadcast(&table->dongles[i].cond);
+        pthread_mutex_unlock(&table->dongles[i].mutex);
+        i++;
+    }
+}
 
 void *monitor_routine(void *arg)
 {
@@ -38,10 +54,7 @@ void *monitor_routine(void *arg)
             now = get_current_time(table);
             if (now - last_compile > table->params.time_to_burnout)
             {
-                print_log(&table->coders[i], "has burned out");
-                pthread_mutex_lock(&table->end_mutex);
-                table->simulation_ended = 1;
-                pthread_mutex_unlock(&table->end_mutex);
+                stop_simulation(table);
                 print_log(&table->coders[i], "burned out");
                 return (NULL);
             }
@@ -49,9 +62,7 @@ void *monitor_routine(void *arg)
         }
         if (check_all_full(table))
         {
-            pthread_mutex_lock(&table->end_mutex);
-            table->simulation_ended = 1;
-            pthread_mutex_unlock(&table->end_mutex);
+            stop_simulation(table);
             return (NULL);
         }
         // Pause courte de 1 ms pour respecter la tolérance strict de 10 ms sans surcharger le CPU

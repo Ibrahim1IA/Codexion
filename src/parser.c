@@ -3,7 +3,7 @@
 int is_valid_integer(char *str)
 {
     int i;
-    int value;
+    long value;
 
     i = 0;
     value = 0;
@@ -67,13 +67,13 @@ int is_args_valid(int ac, char **av)
         printf("ARGUMENT ERROR: Invalid arguments.\n");
         return (0);
     }
-    return (0);
+    return (1);
 }
 
 int parse_args(t_params *params, int ac, char **av)
 {
 
-    if (is_args_valid(ac, av))
+    if (!is_args_valid(ac, av))
         return (0);
     params->num_coders = atoi(av[1]);
     params->time_to_burnout = atoi(av[2]);

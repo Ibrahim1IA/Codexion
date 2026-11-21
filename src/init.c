@@ -22,7 +22,7 @@ static void clean_exit(t_table *table)
 int init_simulation(t_table *table,  t_params params)
 {
     table->params = params;
-    table->start_time = get_current_time(0);
+    table->start_time = get_time_in_ms();
     if (!init_simulation_mutexes(table))
         return (0);
 
