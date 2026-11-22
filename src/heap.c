@@ -1,11 +1,17 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   heap.c                                             :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: iissoufo <iissoufo@student.1337.ma>        +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2026/11/22 12:26:42 by iissoufo          #+#    #+#             */
+/*   Updated: 2026/11/22 12:26:43 by iissoufo         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "codexion.h"
 
-/*
-- sift_up: moves a too-small node up, swapping with its parent,
-until the min-heap property holds again.
-When it's used: right after a new element is added at the very
-bottom (end) of the array — it needs to travel up to its correct spot.
-*/
 static void sift_up(t_min_heap *heap, int index, t_scheduler sch_type)
 {
     int parent_index;

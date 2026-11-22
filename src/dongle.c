@@ -7,7 +7,7 @@ static void get_timeout_timespec(struct timespec *ts, long long ms_from_now)
     gettimeofday(&tv, NULL);
     ts->tv_sec = tv.tv_sec + (ms_from_now / 1000);
     ts->tv_nsec = (tv.tv_usec * 1000) + ((ms_from_now % 1000) * 1000000);
-    if (ts->tv_nsec > 1000000000)
+    if (ts->tv_nsec >= 1000000000)
     {
         ts->tv_sec += 1;
         ts->tv_nsec -= 1000000000; 
@@ -20,11 +20,11 @@ int heap_init(t_min_heap *heap, int capacity)
     if (!heap->data)
     {
 		fprintf(stderr, "ERROR: Failed to initialize dongle heap.\n");
-		return (1);
+		return (0);
 	}
     heap->size = 0;
     heap->capacity = capacity;
-    return (0);
+    return (1);
     
 }
 
@@ -44,7 +44,8 @@ int init_dongles(t_table *table)
         table->dongles[i].cooldown_until = 0;
         pthread_mutex_init(&table->dongles[i].mutex, NULL);
         pthread_cond_init(&table->dongles[i].cond, NULL);
-        heap_init(&table->dongles[i].waiting_queue, table->params.num_coders);
+        if (!heap_init(&table->dongles[i].waiting_queue, table->params.num_coders))
+            return (0); 
         i++;
     }
     return (1);

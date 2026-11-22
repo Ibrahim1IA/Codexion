@@ -1,10 +1,12 @@
 #include "codexion.h"
+
 static int init_simulation_mutexes(t_table *table)
 {
     if (pthread_mutex_init(&table->end_mutex, NULL) != 0)
         return (0);
     if (pthread_mutex_init(&table->log_mutex, NULL) != 0)
     {
+        fprintf(stderr, "ERROR: Failed to initialize log mutex.\n");
         pthread_mutex_destroy(&table->end_mutex);
         return (0);
     }
