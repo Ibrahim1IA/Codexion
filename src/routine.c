@@ -6,7 +6,7 @@
 /*   By: iissoufo <iissoufo@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/11/22 12:27:12 by iissoufo          #+#    #+#             */
-/*   Updated: 2026/11/22 14:21:02 by iissoufo         ###   ########.fr       */
+/*   Updated: 2026/11/22 16:44:27 by iissoufo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -61,7 +61,7 @@ void	*coder_routine(void *arg)
 	t_coder	*coder;
 
 	coder = (t_coder *)arg;
-    pthread_mutex_lock(&coder->table->start_mutex);    // attend le signal de départ
+	pthread_mutex_lock(&coder->table->start_mutex);
 	pthread_mutex_unlock(&coder->table->start_mutex);
 	if (coder->id % 2 == 0)
 		usleep(1000);

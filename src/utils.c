@@ -6,7 +6,7 @@
 /*   By: iissoufo <iissoufo@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/11/22 12:27:17 by iissoufo          #+#    #+#             */
-/*   Updated: 2026/11/22 13:30:19 by iissoufo         ###   ########.fr       */
+/*   Updated: 2026/11/22 16:46:25 by iissoufo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -82,4 +82,3 @@ void	print_log(t_coder *coder, const char *message)
 	pthread_mutex_unlock(&coder->table->end_mutex);
 	pthread_mutex_unlock(&coder->table->log_mutex);
 }
-

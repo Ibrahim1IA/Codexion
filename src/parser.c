@@ -6,7 +6,7 @@
 /*   By: iissoufo <iissoufo@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/11/22 12:27:06 by iissoufo          #+#    #+#             */
-/*   Updated: 2026/11/22 13:20:17 by iissoufo         ###   ########.fr       */
+/*   Updated: 2026/11/22 16:43:31 by iissoufo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -74,10 +74,10 @@ int	has_valid_scheduler(char *str)
 int	is_args_valid(int ac, char **av)
 {
 	if (ac != 9)
-    {
-        fprintf(stderr, "ARGUMENT ERROR: Invalid number of arguments.\n");
-        return (0);
-    }
+	{
+		fprintf(stderr, "ARGUMENT ERROR: Invalid number of arguments.\n");
+		return (0);
+	}
 	if (is_valid_numbers(ac, av) == 1 || has_valid_scheduler(av[8]) == 1)
 	{
 		fprintf(stderr, "ARGUMENT ERROR: Invalid arguments.\n");
