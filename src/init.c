@@ -20,30 +20,44 @@ static int init_simulation_mutexes(t_table *table)
     table->simulation_ended = 0;
     return (1);
 }
-void clean_exit(t_table *table)
+void join_coders(t_table *table, int count)
 {
     int i;
-    pthread_join(table->monitor_thread, NULL);
 
     i = 0;
-    while (i < table->params.num_coders)
+    while (i < count)
     {
         pthread_join(table->coders[i].thread_id, NULL);
-        pthread_mutex_destroy(&table->coders[i].coder_mutex);
         i++;
     }
+}
 
+void free_all(t_table *table)
+{
+    int i;
+
+    if (table->coders)
+    {
+        i = 0;
+        while (i < table->params.num_coders)
+        {
+            pthread_mutex_destroy(&table->coders[i].coder_mutex);
+            i++;
+        }
+        free(table->coders);
+        table->coders = NULL;
+    }
     destroy_dongles(table);
- 
     pthread_mutex_destroy(&table->log_mutex);
     pthread_mutex_destroy(&table->end_mutex);
     pthread_mutex_destroy(&table->start_mutex);
+}
 
-
-    if (table->coders)
-        free(table->coders);
-    if (table->params.num_coders > 0)
-        free(table->dongles);
+void clean_exit(t_table *table)
+{
+    pthread_join(table->monitor_thread, NULL);
+    join_coders(table, table->params.num_coders);
+    free_all(table);
 }
 
 int init_simulation(t_table *table,  t_params params)
@@ -66,8 +80,10 @@ int init_simulation(t_table *table,  t_params params)
 
     if (pthread_create(&table->monitor_thread, NULL, monitor_routine, (void *)table) != 0)
     {
-        table->simulation_ended = 1;
-        clean_exit(table);
+        fprintf(stderr, "ERROR: Failed to create monitor thread.\n");
+        stop_simulation(table);
+        join_coders(table, table->params.num_coders);
+        free_all(table);
         return (0);
     }
     return (1);

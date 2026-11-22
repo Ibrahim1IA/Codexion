@@ -6,7 +6,7 @@
 /*   By: iissoufo <iissoufo@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/11/22 12:26:59 by iissoufo          #+#    #+#             */
-/*   Updated: 2026/11/22 12:54:02 by iissoufo         ###   ########.fr       */
+/*   Updated: 2026/11/22 14:35:55 by iissoufo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,7 +32,7 @@ static int	check_all_full(t_table *table)
 	return (full_count == table->params.num_coders);
 }
 
-static void	stop_simulation(t_table *table)
+void	stop_simulation(t_table *table)
 {
 	int	i;
 

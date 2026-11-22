@@ -6,7 +6,7 @@
 /*   By: iissoufo <iissoufo@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/11/22 12:25:36 by iissoufo          #+#    #+#             */
-/*   Updated: 2026/11/22 14:19:23 by iissoufo         ###   ########.fr       */
+/*   Updated: 2026/11/22 14:49:53 by iissoufo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,7 +34,11 @@ int init_coder(t_table *table)
 
     table->coders = malloc(sizeof(t_coder) * table->params.num_coders);
     if (!table->coders)
+    {
+        fprintf(stderr, "ERROR: Failed to allocate coders.\n");
+        free_all(table);
         return (0);
+    }
     
     for (i = 0; i < table->params.num_coders; i++)
         setup_coder_struct(table, i);
@@ -47,7 +51,12 @@ int init_coder(t_table *table)
         if (pthread_create(&table->coders[i].thread_id, NULL, coder_routine, &table->coders[i]) != 0)
         {
             fprintf(stderr, "ERROR: Failed to create coder thread %d.\n", i + 1);
-            clean_exit(table);
+            pthread_mutex_lock(&table->end_mutex);
+            table->simulation_ended = 1;              // les threads créés vont s'arrêter
+            pthread_mutex_unlock(&table->end_mutex);
+            pthread_mutex_unlock(&table->start_mutex); // on les libère de la barrière
+            join_coders(table, i);                    // seulement les i threads créés
+            free_all(table);
             return (0);
         }
         i++;

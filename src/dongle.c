@@ -47,7 +47,16 @@ int init_dongles(t_table *table)
         if (!heap_init(&table->dongles[i].waiting_queue, table->params.num_coders))
         {
             fprintf(stderr, "ERROR: Failed to initialize dongle waiting queue.\n");
-            destroy_dongles(table);
+            pthread_mutex_destroy(&table->dongles[i].mutex);
+            pthread_cond_destroy(&table->dongles[i].cond);
+            while (--i >= 0)
+            {
+                pthread_mutex_destroy(&table->dongles[i].mutex);
+                pthread_cond_destroy(&table->dongles[i].cond);
+                free(table->dongles[i].waiting_queue.data);
+            }
+            free(table->dongles);
+            table->dongles = NULL;
             return (0);
         }
 
@@ -67,10 +76,7 @@ void destroy_dongles(t_table *table)
     i = 0;
     while (i < table->params.num_coders)
     {
-        // 1. Destruction du mutex propre au dongle
         pthread_mutex_destroy(&table->dongles[i].mutex);
-
-        // 2. Destruction de la variable de condition
         pthread_cond_destroy(&table->dongles[i].cond);
 
         if (table->dongles[i].waiting_queue.data)
@@ -81,7 +87,6 @@ void destroy_dongles(t_table *table)
         i++;
     }
 
-    // 4. Libération du tableau principal des dongles
     free(table->dongles);
     table->dongles = NULL;
 }

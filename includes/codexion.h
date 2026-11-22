@@ -102,6 +102,9 @@ int min_heap_pop(t_min_heap *heap, t_scheduler sch_type);
 // initialisation de la simulation
 int init_simulation(t_table *table,  t_params params);
 void clean_exit(t_table *table);
+void join_coders(t_table *table, int count);
+void free_all(t_table *table);
+void stop_simulation(t_table *table);
 
 // Utils
 
