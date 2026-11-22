@@ -6,7 +6,7 @@
 /*   By: iissoufo <iissoufo@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/11/22 12:27:12 by iissoufo          #+#    #+#             */
-/*   Updated: 2026/11/22 12:39:34 by iissoufo         ###   ########.fr       */
+/*   Updated: 2026/11/22 14:21:02 by iissoufo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,14 +14,19 @@
 
 static void	precise_sleep(long long duration, t_table *table)
 {
-	long long	start_time;
+	long long	end;
+	long long	remaining;
 
-	start_time = get_current_time(table);
+	end = get_current_time(table) + duration;
 	while (!should_stop_now(table))
 	{
-		if (get_current_time(table) - start_time >= duration)
+		remaining = end - get_current_time(table);
+		if (remaining <= 0)
 			break ;
-		usleep(500);
+		if (remaining > 10)
+			usleep(10000);
+		else
+			usleep(remaining * 1000 / 2 + 100);
 	}
 }
 
@@ -56,6 +61,8 @@ void	*coder_routine(void *arg)
 	t_coder	*coder;
 
 	coder = (t_coder *)arg;
+    pthread_mutex_lock(&coder->table->start_mutex);    // attend le signal de départ
+	pthread_mutex_unlock(&coder->table->start_mutex);
 	if (coder->id % 2 == 0)
 		usleep(1000);
 	while (!should_stop_now(coder->table))

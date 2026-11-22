@@ -71,6 +71,7 @@ typedef struct s_table {
     int             simulation_ended;
     pthread_mutex_t end_mutex;
     pthread_mutex_t log_mutex;
+    pthread_mutex_t start_mutex;
     t_dongle        *dongles;
     t_coder         *coders;
     pthread_t       monitor_thread;

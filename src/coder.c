@@ -6,7 +6,7 @@
 /*   By: iissoufo <iissoufo@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/11/22 12:25:36 by iissoufo          #+#    #+#             */
-/*   Updated: 2026/11/22 13:25:48 by iissoufo         ###   ########.fr       */
+/*   Updated: 2026/11/22 14:19:23 by iissoufo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,6 +39,8 @@ int init_coder(t_table *table)
     for (i = 0; i < table->params.num_coders; i++)
         setup_coder_struct(table, i);
 
+    
+    pthread_mutex_lock(&table->start_mutex);
     i = 0;
     while (i < table->params.num_coders)
     {
@@ -50,5 +52,7 @@ int init_coder(t_table *table)
         }
         i++;
     }
+    table->start_time = get_time_in_ms();   // l'horloge démarre ici
+    pthread_mutex_unlock(&table->start_mutex);
     return (1);
 }
