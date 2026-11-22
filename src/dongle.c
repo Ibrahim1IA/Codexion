@@ -45,7 +45,12 @@ int init_dongles(t_table *table)
         pthread_mutex_init(&table->dongles[i].mutex, NULL);
         pthread_cond_init(&table->dongles[i].cond, NULL);
         if (!heap_init(&table->dongles[i].waiting_queue, table->params.num_coders))
-            return (0); 
+        {
+            fprintf(stderr, "ERROR: Failed to initialize dongle waiting queue.\n");
+            destroy_dongles(table);
+            return (0);
+        }
+
         i++;
     }
     return (1);

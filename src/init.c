@@ -13,14 +13,31 @@ static int init_simulation_mutexes(t_table *table)
     table->simulation_ended = 0;
     return (1);
 }
-
-static void clean_exit(t_table *table)
+void clean_exit(t_table *table)
 {
-    pthread_mutex_destroy(&table->end_mutex);
-    pthread_mutex_destroy(&table->log_mutex);
+    int i;
+    pthread_join(table->monitor_thread, NULL);
+
+    i = 0;
+    while (i < table->params.num_coders)
+    {
+        pthread_join(table->coders[i].thread_id, NULL);
+        pthread_mutex_destroy(&table->coders[i].coder_mutex);
+        i++;
+    }
+
     destroy_dongles(table);
-    free(table->coders);
+ 
+    pthread_mutex_destroy(&table->log_mutex);
+    pthread_mutex_destroy(&table->end_mutex);
+
+
+    if (table->coders)
+        free(table->coders);
+    if (table->params.num_coders > 0)
+        free(table->dongles);
 }
+
 int init_simulation(t_table *table,  t_params params)
 {
     table->params = params;

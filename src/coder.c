@@ -6,7 +6,7 @@
 /*   By: iissoufo <iissoufo@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/11/22 12:25:36 by iissoufo          #+#    #+#             */
-/*   Updated: 2026/11/22 12:25:37 by iissoufo         ###   ########.fr       */
+/*   Updated: 2026/11/22 13:25:48 by iissoufo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,7 +43,11 @@ int init_coder(t_table *table)
     while (i < table->params.num_coders)
     {
         if (pthread_create(&table->coders[i].thread_id, NULL, coder_routine, &table->coders[i]) != 0)
+        {
+            fprintf(stderr, "ERROR: Failed to create coder thread %d.\n", i + 1);
+            clean_exit(table);
             return (0);
+        }
         i++;
     }
     return (1);

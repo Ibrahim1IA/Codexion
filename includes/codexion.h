@@ -100,8 +100,10 @@ int min_heap_pop(t_min_heap *heap, t_scheduler sch_type);
 
 // initialisation de la simulation
 int init_simulation(t_table *table,  t_params params);
+void clean_exit(t_table *table);
 
 // Utils
+
 long long get_current_time(t_table *table);
 void print_log(t_coder *coder, const char *message);
 int should_stop_now(t_table *table);
