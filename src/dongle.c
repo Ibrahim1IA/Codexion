@@ -202,15 +202,15 @@ bool	acquire_both_dongles(t_coder *coder)
 		return (false);
 	}
 	if (coder->id % 2 == 1)
-    {
-        first = coder->left_dongle;
-        second = coder->right_dongle;
-    }
-    else
-    {
-        first = coder->right_dongle;
-        second = coder->left_dongle;
-    }
+	{
+		first = coder->left_dongle;
+		second = coder->right_dongle;
+	}
+	else
+	{
+		first = coder->right_dongle;
+		second = coder->left_dongle;
+	}
 	if (!take_dongle(coder, first))
 		return (false);
 	if (!take_dongle(coder, second))
