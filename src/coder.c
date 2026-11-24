@@ -6,13 +6,13 @@
 /*   By: iissoufo <iissoufo@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/11/22 12:25:36 by iissoufo          #+#    #+#             */
-/*   Updated: 2026/11/22 17:14:59 by iissoufo         ###   ########.fr       */
+/*   Updated: 2026/11/24 17:24:06 by iissoufo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "codexion.h"
 
-static void	setup_coder_struct(t_table *table, int i)
+static int	setup_coder_struct(t_table *table, int i)
 {
 	t_coder	*coder;
 
@@ -27,8 +27,11 @@ static void	setup_coder_struct(t_table *table, int i)
 	else
 		coder->right_dongle = &table->dongles[(i + 1)
 			% table->params.num_coders];
-	pthread_mutex_init(&table->coders[i].coder_mutex, NULL);
 	table->coders[i].table = table;
+	if (pthread_mutex_init(&table->coders[i].coder_mutex, NULL) != 0)
+		return (0);
+	return (1);
+	
 }
 
 static int	instanciate_coders(t_table *table)
@@ -56,6 +59,18 @@ static int	instanciate_coders(t_table *table)
 	return (1);
 }
 
+static int	free_coders(t_table *table, int count)
+{
+	fprintf(stderr, "ERROR: Failed to initialize coder mutex %d.\n",
+		count + 1);
+	while (--count >= 0)
+		pthread_mutex_destroy(&table->coders[count].coder_mutex);
+	free(table->coders);
+	table->coders = NULL;
+	free_all(table);
+	return (0);
+}
+
 int	init_coder(t_table *table)
 {
 	int	i;
@@ -70,7 +85,8 @@ int	init_coder(t_table *table)
 	i = 0;
 	while (i < table->params.num_coders)
 	{
-		setup_coder_struct(table, i);
+		if (!setup_coder_struct(table, i))
+			free_coders(table, i);
 		i++;
 	}
 	pthread_mutex_lock(&table->start_mutex);

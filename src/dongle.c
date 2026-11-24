@@ -6,17 +6,19 @@
 /*   By: iissoufo <iissoufo@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/11/22 16:54:24 by iissoufo          #+#    #+#             */
-/*   Updated: 2026/11/24 09:34:24 by iissoufo         ###   ########.fr       */
+/*   Updated: 2026/11/24 17:09:29 by iissoufo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "codexion.h"
 
-static int	free_dongles(t_table *table, int i)
+static int	free_dongles(t_table *table, int i, int step)
 {
 	fprintf(stderr, "ERROR: Failed to initialize dongle waiting queue.\n");
-	pthread_mutex_destroy(&table->dongles[i].mutex);
-	pthread_cond_destroy(&table->dongles[i].cond);
+	if (step >= 1)
+		pthread_mutex_destroy(&table->dongles[i].mutex);
+	if (step >= 2)
+		pthread_cond_destroy(&table->dongles[i].cond);
 	while (--i >= 0)
 	{
 		pthread_mutex_destroy(&table->dongles[i].mutex);
@@ -41,11 +43,13 @@ int	init_dongles(t_table *table)
 		table->dongles[i].id = i + 1;
 		table->dongles[i].is_available = 1;
 		table->dongles[i].cooldown_until = 0;
-		pthread_mutex_init(&table->dongles[i].mutex, NULL);
-		pthread_cond_init(&table->dongles[i].cond, NULL);
+		if (pthread_mutex_init(&table->dongles[i].mutex, NULL) != 0)
+			free_dongles(table, i, 0);
+		if (pthread_cond_init(&table->dongles[i].cond, NULL) != 0)
+			free_dongles(table, i, 1);
 		if (!heap_init(&table->dongles[i].waiting_queue,
 				table->params.num_coders))
-			return (free_dongles(table, i));
+			return (free_dongles(table, i, 2));
 		i++;
 	}
 	return (1);
