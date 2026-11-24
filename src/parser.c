@@ -6,7 +6,7 @@
 /*   By: iissoufo <iissoufo@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/11/22 12:27:06 by iissoufo          #+#    #+#             */
-/*   Updated: 2026/11/22 16:43:31 by iissoufo         ###   ########.fr       */
+/*   Updated: 2026/11/24 20:17:35 by iissoufo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,7 +52,7 @@ int	is_valid_numbers(int ac, char **av)
 		}
 		if (is_valid_integer(av[i]) == 1)
 			return (1);
-		if (atoi(av[i]) == 0)
+		if ((atoi(av[i]) == 0) && i != 7)
 		{
 			fprintf(stderr,
 				"INVALID ARGUMENT : values must be greater than Zero\n");

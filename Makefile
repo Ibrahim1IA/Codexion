@@ -6,7 +6,7 @@
 #    By: iissoufo <iissoufo@student.1337.ma>        +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2026/11/22 12:27:23 by iissoufo          #+#    #+#              #
-#    Updated: 2026/11/24 09:54:22 by iissoufo         ###   ########.fr        #
+#    Updated: 2026/11/24 20:35:29 by iissoufo         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -29,10 +29,11 @@ SRCS = src/main.c \
 OBJS = $(SRCS:.c=.o)
 
 all: $(NAME)
-
+$(OBJS): includes/codexion.h 
 $(NAME): $(OBJS)
 	$(CC) $(CFLAGS) -o $(NAME) $(OBJS)
-	echo "$(NAME) compiled successfully!"
+	@echo "$(NAME) compiled successfully!"
+
 
 src/%.o: src/%.c
 	$(CC) $(CFLAGS) -c $< -o $@

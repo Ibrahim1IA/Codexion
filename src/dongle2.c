@@ -6,7 +6,7 @@
 /*   By: iissoufo <iissoufo@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/11/24 09:02:37 by iissoufo          #+#    #+#             */
-/*   Updated: 2026/11/24 19:30:44 by iissoufo         ###   ########.fr       */
+/*   Updated: 2026/11/24 20:29:27 by iissoufo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -62,7 +62,7 @@ void	release_dongles(t_coder *coder)
 
 static void	assign_dongles(t_coder *coder, t_dongle **first, t_dongle **second)
 {
-	if (coder->left_dongle->id < coder->right_dongle->id)
+	if (coder->id % 2 == 1)
 	{
 		*first = coder->left_dongle;
 		*second = coder->right_dongle;

@@ -6,7 +6,7 @@
 /*   By: iissoufo <iissoufo@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/11/24 08:48:21 by iissoufo          #+#    #+#             */
-/*   Updated: 2026/11/24 19:28:07 by iissoufo         ###   ########.fr       */
+/*   Updated: 2026/11/24 20:31:44 by iissoufo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,7 +47,11 @@ bool	is_higher_priority(t_request *a, t_request *b, t_scheduler sch_type)
 		if (a->deadline < b->deadline)
 			return (true);
 		else if (a->deadline == b->deadline)
+		{
+			if (a->request_time == b->request_time)
+				return (a->coder_id < b->coder_id);
 			return (a->request_time < b->request_time);
+		}
 		else
 			return (false);
 	}
