@@ -6,7 +6,7 @@
 /*   By: iissoufo <iissoufo@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/11/22 12:27:12 by iissoufo          #+#    #+#             */
-/*   Updated: 2026/11/24 16:33:30 by iissoufo         ###   ########.fr       */
+/*   Updated: 2026/11/24 17:53:25 by iissoufo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,13 +47,13 @@ static void	coder_compile(t_coder *coder)
 static void	coder_debug(t_coder *coder)
 {
 	print_log(coder, "is debugging");
+	release_dongles(coder);
 	precise_sleep(coder->table->params.time_to_debug, coder->table);
 }
 
 static void	coder_refactor(t_coder *coder)
 {
 	print_log(coder, "is refactoring");
-	release_dongles(coder);
 	precise_sleep(coder->table->params.time_to_refactor, coder->table);
 }
 

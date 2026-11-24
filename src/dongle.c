@@ -6,7 +6,7 @@
 /*   By: iissoufo <iissoufo@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/11/22 16:54:24 by iissoufo          #+#    #+#             */
-/*   Updated: 2026/11/24 17:09:29 by iissoufo         ###   ########.fr       */
+/*   Updated: 2026/11/24 17:52:20 by iissoufo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,7 @@
 
 static int	free_dongles(t_table *table, int i, int step)
 {
-	fprintf(stderr, "ERROR: Failed to initialize dongle waiting queue.\n");
+	fprintf(stderr, "ERROR: Failed to initialize dongle %d.\n", i);
 	if (step >= 1)
 		pthread_mutex_destroy(&table->dongles[i].mutex);
 	if (step >= 2)
@@ -44,9 +44,9 @@ int	init_dongles(t_table *table)
 		table->dongles[i].is_available = 1;
 		table->dongles[i].cooldown_until = 0;
 		if (pthread_mutex_init(&table->dongles[i].mutex, NULL) != 0)
-			free_dongles(table, i, 0);
+			return (free_dongles(table, i, 0));
 		if (pthread_cond_init(&table->dongles[i].cond, NULL) != 0)
-			free_dongles(table, i, 1);
+			return (free_dongles(table, i, 1));
 		if (!heap_init(&table->dongles[i].waiting_queue,
 				table->params.num_coders))
 			return (free_dongles(table, i, 2));

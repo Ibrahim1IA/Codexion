@@ -6,7 +6,7 @@
 /*   By: iissoufo <iissoufo@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/11/22 12:25:36 by iissoufo          #+#    #+#             */
-/*   Updated: 2026/11/24 17:24:06 by iissoufo         ###   ########.fr       */
+/*   Updated: 2026/11/24 17:58:32 by iissoufo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,7 +31,6 @@ static int	setup_coder_struct(t_table *table, int i)
 	if (pthread_mutex_init(&table->coders[i].coder_mutex, NULL) != 0)
 		return (0);
 	return (1);
-	
 }
 
 static int	instanciate_coders(t_table *table)
@@ -86,7 +85,7 @@ int	init_coder(t_table *table)
 	while (i < table->params.num_coders)
 	{
 		if (!setup_coder_struct(table, i))
-			free_coders(table, i);
+			return (free_coders(table, i));
 		i++;
 	}
 	pthread_mutex_lock(&table->start_mutex);
