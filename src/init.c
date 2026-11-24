@@ -6,7 +6,7 @@
 /*   By: iissoufo <iissoufo@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/11/22 16:49:56 by iissoufo          #+#    #+#             */
-/*   Updated: 2026/11/22 16:49:57 by iissoufo         ###   ########.fr       */
+/*   Updated: 2026/11/24 09:00:48 by iissoufo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,32 +45,17 @@ void	join_coders(t_table *table, int count)
 	}
 }
 
-void	free_all(t_table *table)
+int	heap_init(t_min_heap *heap, int capacity)
 {
-	int	i;
-
-	if (table->coders)
+	heap->data = malloc(sizeof(t_request) * capacity);
+	if (!heap->data)
 	{
-		i = 0;
-		while (i < table->params.num_coders)
-		{
-			pthread_mutex_destroy(&table->coders[i].coder_mutex);
-			i++;
-		}
-		free(table->coders);
-		table->coders = NULL;
+		fprintf(stderr, "ERROR: Failed to initialize dongle heap.\n");
+		return (0);
 	}
-	destroy_dongles(table);
-	pthread_mutex_destroy(&table->log_mutex);
-	pthread_mutex_destroy(&table->end_mutex);
-	pthread_mutex_destroy(&table->start_mutex);
-}
-
-void	clean_exit(t_table *table)
-{
-	pthread_join(table->monitor_thread, NULL);
-	join_coders(table, table->params.num_coders);
-	free_all(table);
+	heap->size = 0;
+	heap->capacity = capacity;
+	return (1);
 }
 
 int	init_simulation(t_table *table, t_params params)

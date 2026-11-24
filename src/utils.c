@@ -6,7 +6,7 @@
 /*   By: iissoufo <iissoufo@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/11/22 12:27:17 by iissoufo          #+#    #+#             */
-/*   Updated: 2026/11/22 16:46:25 by iissoufo         ###   ########.fr       */
+/*   Updated: 2026/11/24 09:27:12 by iissoufo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,6 +27,20 @@ long long	get_current_time(t_table *table)
 	return (get_time_in_ms() - table->start_time);
 }
 
+void	get_timeout_timespec(struct timespec *ts, long long ms_from_now)
+{
+	struct timeval	tv;
+
+	gettimeofday(&tv, NULL);
+	ts->tv_sec = tv.tv_sec + (ms_from_now / 1000);
+	ts->tv_nsec = (tv.tv_usec * 1000) + ((ms_from_now % 1000) * 1000000);
+	if (ts->tv_nsec >= 1000000000)
+	{
+		ts->tv_sec += 1;
+		ts->tv_nsec -= 1000000000;
+	}
+}
+
 int	should_stop_now(t_table *table)
 {
 	int	result;
@@ -44,41 +58,4 @@ void	ft_swap(t_request *a, t_request *b)
 	temp = *a;
 	*a = *b;
 	*b = temp;
-}
-
-bool	is_higher_priority(t_request *a, t_request *b, t_scheduler sch_type)
-{
-	if (sch_type == SCH_EDF)
-	{
-		if (a->deadline < b->deadline)
-			return (true);
-		else if (a->deadline == b->deadline)
-			return (a->request_time < b->request_time);
-		else
-			return (false);
-	}
-	else
-	{
-		if (a->request_time < b->request_time)
-			return (true);
-		else if (a->request_time == b->request_time)
-			return (a->deadline < b->deadline);
-		else
-			return (false);
-	}
-}
-
-void	print_log(t_coder *coder, const char *message)
-{
-	long long	timestamp;
-
-	pthread_mutex_lock(&coder->table->log_mutex);
-	pthread_mutex_lock(&coder->table->end_mutex);
-	if (!coder->table->simulation_ended || strcmp(message, "burned out") == 0)
-	{
-		timestamp = get_current_time(coder->table);
-		printf("%lld %d %s\n", timestamp, coder->id, message);
-	}
-	pthread_mutex_unlock(&coder->table->end_mutex);
-	pthread_mutex_unlock(&coder->table->log_mutex);
 }

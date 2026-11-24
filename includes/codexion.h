@@ -6,7 +6,7 @@
 /*   By: iissoufo <iissoufo@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/11/23 17:57:00 by iissoufo          #+#    #+#             */
-/*   Updated: 2026/11/23 17:57:01 by iissoufo         ###   ########.fr       */
+/*   Updated: 2026/11/24 09:35:10 by iissoufo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,7 +54,6 @@ typedef struct s_min_heap
 	int				capacity;
 }					t_min_heap;
 
-// Structure représentant un Dongle USB
 typedef struct s_dongle
 {
 	int				id;
@@ -65,7 +64,6 @@ typedef struct s_dongle
 	t_min_heap		waiting_queue;
 }					t_dongle;
 
-// Structure d'un Coder (Thread)
 typedef struct s_coder
 {
 	int				id;
@@ -92,6 +90,8 @@ typedef struct s_table
 	pthread_t		monitor_thread;
 }					t_table;
 
+void				push_request(t_coder *coder, t_dongle *dongle);
+bool				try_acquire(t_coder *coder, t_dongle *dongle);
 int					init_dongles(t_table *table);
 bool				take_dongle(t_coder *coder, t_dongle *dongle);
 bool				acquire_both_dongles(t_coder *coder);
@@ -108,8 +108,8 @@ int					init_coder(t_table *table);
 int					min_heap_push(t_min_heap *heap, t_request *request,
 						t_scheduler sch_type);
 int					min_heap_pop(t_min_heap *heap, t_scheduler sch_type);
+int					heap_init(t_min_heap *heap, int capacity);
 
-// initialisation de la simulation
 int					init_simulation(t_table *table, t_params params);
 void				clean_exit(t_table *table);
 void				join_coders(t_table *table, int count);
@@ -125,4 +125,6 @@ void				ft_swap(t_request *a, t_request *b);
 bool				is_higher_priority(t_request *a, t_request *b,
 						t_scheduler sch_type);
 long				get_time_in_ms(void);
+void				get_timeout_timespec(struct timespec *ts,
+						long long ms_from_now);
 #endif
