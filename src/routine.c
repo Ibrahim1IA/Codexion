@@ -6,7 +6,7 @@
 /*   By: iissoufo <iissoufo@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/11/22 12:27:12 by iissoufo          #+#    #+#             */
-/*   Updated: 2026/11/24 19:39:22 by iissoufo         ###   ########.fr       */
+/*   Updated: 2026/11/25 20:21:08 by iissoufo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -65,7 +65,7 @@ void	*coder_routine(void *arg)
 	pthread_mutex_lock(&coder->table->start_mutex);
 	pthread_mutex_unlock(&coder->table->start_mutex);
 	if (coder->id % 2 == 0)
-		usleep(1000);
+		precise_sleep(coder->table->params.time_to_compile, coder->table);
 	while (!should_stop_now(coder->table))
 	{
 		if (!acquire_both_dongles(coder))

@@ -6,7 +6,7 @@
 /*   By: iissoufo <iissoufo@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/11/24 09:02:37 by iissoufo          #+#    #+#             */
-/*   Updated: 2026/11/25 19:33:23 by iissoufo         ###   ########.fr       */
+/*   Updated: 2026/11/25 20:17:02 by iissoufo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,7 +50,7 @@ static bool	try_acquire_both(t_coder *c)
 
 	if (!is_ready(c, c->left_dongle) || !is_ready(c, c->right_dongle))
 	{
-		pthread_cond_wait(&c->table->dongle_cond, &c->table->dongle_mutex);
+		pthread_cond_wait(&c->cond, &c->table->dongle_mutex);
 		return (false);
 	}
 	wait = c->left_dongle->cooldown_until;
@@ -60,7 +60,7 @@ static bool	try_acquire_both(t_coder *c)
 	if (wait > 0)
 	{
 		get_timeout_timespec(&ts, wait);
-		pthread_cond_timedwait(&c->table->dongle_cond,
+		pthread_cond_timedwait(&c->cond,
 			&c->table->dongle_mutex, &ts);
 		return (false);
 	}

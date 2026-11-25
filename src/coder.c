@@ -6,7 +6,7 @@
 /*   By: iissoufo <iissoufo@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/11/22 12:25:36 by iissoufo          #+#    #+#             */
-/*   Updated: 2026/11/24 17:58:32 by iissoufo         ###   ########.fr       */
+/*   Updated: 2026/11/25 20:19:30 by iissoufo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,6 +30,11 @@ static int	setup_coder_struct(t_table *table, int i)
 	table->coders[i].table = table;
 	if (pthread_mutex_init(&table->coders[i].coder_mutex, NULL) != 0)
 		return (0);
+	if (pthread_cond_init(&table->coders[i].cond, NULL) != 0)
+	{
+		pthread_mutex_destroy(&table->coders[i].coder_mutex);
+		return (0);
+	}
 	return (1);
 }
 
@@ -63,7 +68,10 @@ static int	free_coders(t_table *table, int count)
 	fprintf(stderr, "ERROR: Failed to initialize coder mutex %d.\n",
 		count + 1);
 	while (--count >= 0)
+	{
 		pthread_mutex_destroy(&table->coders[count].coder_mutex);
+		pthread_cond_destroy(&table->coders[count].cond);
+	}
 	free(table->coders);
 	table->coders = NULL;
 	free_all(table);

@@ -6,7 +6,7 @@
 /*   By: iissoufo <iissoufo@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/11/24 08:48:21 by iissoufo          #+#    #+#             */
-/*   Updated: 2026/11/24 20:31:44 by iissoufo         ###   ########.fr       */
+/*   Updated: 2026/11/25 20:19:57 by iissoufo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,6 +22,7 @@ void	free_all(t_table *table)
 		while (i < table->params.num_coders)
 		{
 			pthread_mutex_destroy(&table->coders[i].coder_mutex);
+			pthread_cond_destroy(&table->coders[i].cond);
 			i++;
 		}
 		free(table->coders);

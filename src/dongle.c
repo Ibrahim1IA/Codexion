@@ -6,11 +6,9 @@
 /*   By: iissoufo <iissoufo@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/11/22 16:54:24 by iissoufo          #+#    #+#             */
-/*   Updated: 2026/11/25 19:42:46 by iissoufo         ###   ########.fr       */
+/*   Updated: 2026/11/25 20:12:56 by iissoufo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
-
-#include "codexion.h"
 
 #include "codexion.h"
 
@@ -21,28 +19,15 @@ static int	free_dongles(t_table *table, int i)
 		free(table->dongles[i].waiting_queue.data);
 	free(table->dongles);
 	table->dongles = NULL;
-	pthread_cond_destroy(&table->dongle_cond);
 	pthread_mutex_destroy(&table->dongle_mutex);
 	return (0);
-}
-
-static int	init_dongle_sync(t_table *table)
-{
-	if (pthread_mutex_init(&table->dongle_mutex, NULL) != 0)
-		return (0);
-	if (pthread_cond_init(&table->dongle_cond, NULL) != 0)
-	{
-		pthread_mutex_destroy(&table->dongle_mutex);
-		return (0);
-	}
-	return (1);
 }
 
 int	init_dongles(t_table *table)
 {
 	int	i;
 
-	if (!init_dongle_sync(table))
+	if (pthread_mutex_init(&table->dongle_mutex, NULL) != 0)
 		return (0);
 	table->dongles = malloc(sizeof(t_dongle) * table->params.num_coders);
 	if (!table->dongles)
@@ -75,22 +60,30 @@ void	destroy_dongles(t_table *table)
 	}
 	free(table->dongles);
 	table->dongles = NULL;
-	pthread_cond_destroy(&table->dongle_cond);
 	pthread_mutex_destroy(&table->dongle_mutex);
 }
 
 void	release_dongles(t_coder *coder)
 {
-	t_table		*t;
+	t_dongle	*d[2];
 	long long	now;
+	int			id;
+	int			i;
 
-	t = coder->table;
-	pthread_mutex_lock(&t->dongle_mutex);
-	now = get_current_time(t);
-	coder->left_dongle->is_available = 1;
-	coder->left_dongle->cooldown_until = now + t->params.dongle_cooldown;
-	coder->right_dongle->is_available = 1;
-	coder->right_dongle->cooldown_until = now + t->params.dongle_cooldown;
-	pthread_cond_broadcast(&t->dongle_cond);
-	pthread_mutex_unlock(&t->dongle_mutex);
+	d[0] = coder->left_dongle;
+	d[1] = coder->right_dongle;
+	pthread_mutex_lock(&coder->table->dongle_mutex);
+	now = get_current_time(coder->table);
+	i = -1;
+	while (++i < 2)
+	{
+		d[i]->is_available = 1;
+		d[i]->cooldown_until = now + coder->table->params.dongle_cooldown;
+		if (d[i]->waiting_queue.size > 0)
+		{
+			id = d[i]->waiting_queue.data[0].coder_id;
+			pthread_cond_signal(&coder->table->coders[id - 1].cond);
+		}
+	}
+	pthread_mutex_unlock(&coder->table->dongle_mutex);
 }

@@ -6,7 +6,7 @@
 /*   By: iissoufo <iissoufo@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/11/23 17:57:00 by iissoufo          #+#    #+#             */
-/*   Updated: 2026/11/25 19:35:15 by iissoufo         ###   ########.fr       */
+/*   Updated: 2026/11/25 20:12:00 by iissoufo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -72,6 +72,7 @@ typedef struct s_coder
 	t_dongle		*left_dongle;
 	t_dongle		*right_dongle;
 	pthread_mutex_t	coder_mutex;
+	pthread_cond_t	cond;
 	struct s_table	*table;
 }					t_coder;
 
@@ -81,7 +82,6 @@ typedef struct s_table
 	long long		start_time;
 	int				simulation_ended;
 	pthread_mutex_t dongle_mutex;
-	pthread_cond_t dongle_cond;
 	pthread_mutex_t	end_mutex;
 	pthread_mutex_t	log_mutex;
 	pthread_mutex_t	start_mutex;
