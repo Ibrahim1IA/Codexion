@@ -6,7 +6,7 @@
 /*   By: iissoufo <iissoufo@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/11/22 12:26:59 by iissoufo          #+#    #+#             */
-/*   Updated: 2026/11/22 14:35:55 by iissoufo         ###   ########.fr       */
+/*   Updated: 2026/11/25 19:46:56 by iissoufo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,19 +34,12 @@ static int	check_all_full(t_table *table)
 
 void	stop_simulation(t_table *table)
 {
-	int	i;
-
 	pthread_mutex_lock(&table->end_mutex);
 	table->simulation_ended = 1;
 	pthread_mutex_unlock(&table->end_mutex);
-	i = 0;
-	while (i < table->params.num_coders)
-	{
-		pthread_mutex_lock(&table->dongles[i].mutex);
-		pthread_cond_broadcast(&table->dongles[i].cond);
-		pthread_mutex_unlock(&table->dongles[i].mutex);
-		i++;
-	}
+	pthread_mutex_lock(&table->dongle_mutex);
+	pthread_cond_broadcast(&table->dongle_cond);
+	pthread_mutex_unlock(&table->dongle_mutex);
 }
 
 static void	burnout_check(t_table *table)

@@ -6,100 +6,87 @@
 /*   By: iissoufo <iissoufo@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/11/24 09:02:37 by iissoufo          #+#    #+#             */
-/*   Updated: 2026/11/24 20:29:27 by iissoufo         ###   ########.fr       */
+/*   Updated: 2026/11/25 19:33:23 by iissoufo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "codexion.h"
 
-bool	take_dongle(t_coder *coder, t_dongle *dongle)
+static void	push_request(t_coder *c)
 {
-	pthread_mutex_lock(&dongle->mutex);
-	push_request(coder, dongle);
-	while (!should_stop_now(coder->table))
+	t_request	request;
+
+	request.coder_id = c->id;
+	request.request_time = get_current_time(c->table);
+	request.deadline = c->last_compile_start + c->table->params.time_to_burnout;
+	min_heap_push(&c->left_dongle->waiting_queue, &request,
+		c->table->params.scheduler_type);
+	min_heap_push(&c->right_dongle->waiting_queue, &request,
+		c->table->params.scheduler_type);
+}
+
+static bool	is_ready(t_coder *c, t_dongle *d)
+{
+	return (d->is_available && d->waiting_queue.size > 0
+		&& d->waiting_queue.data[0].coder_id == c->id);
+}
+
+static void	take_both(t_coder *c)
+{
+	min_heap_pop(&c->left_dongle->waiting_queue,
+		c->table->params.scheduler_type);
+	min_heap_pop(&c->right_dongle->waiting_queue,
+		c->table->params.scheduler_type);
+	c->left_dongle->is_available = 0;
+	c->right_dongle->is_available = 0;
+	print_log(c, "has taken a dongle");
+	print_log(c, "has taken a dongle");
+}
+
+static bool	try_acquire_both(t_coder *c)
+{
+	long long		wait;
+	struct timespec	ts;
+
+	if (!is_ready(c, c->left_dongle) || !is_ready(c, c->right_dongle))
 	{
-		if (try_acquire(coder, dongle))
+		pthread_cond_wait(&c->table->dongle_cond, &c->table->dongle_mutex);
+		return (false);
+	}
+	wait = c->left_dongle->cooldown_until;
+	if (c->right_dongle->cooldown_until > wait)
+		wait = c->right_dongle->cooldown_until;
+	wait -= get_current_time(c->table);
+	if (wait > 0)
+	{
+		get_timeout_timespec(&ts, wait);
+		pthread_cond_timedwait(&c->table->dongle_cond,
+			&c->table->dongle_mutex, &ts);
+		return (false);
+	}
+	take_both(c);
+	return (true);
+}
+
+bool	acquire_both_dongles(t_coder *c)
+{
+	if (c->left_dongle == c->right_dongle)
+	{
+		print_log(c, "has taken a dongle");
+		while (!should_stop_now(c->table))
+			usleep(500);
+		return (false);
+	}
+	pthread_mutex_lock(&c->table->dongle_mutex);
+	push_request(c);
+	while (!should_stop_now(c->table))
+	{
+		if (try_acquire_both(c))
 		{
-			pthread_mutex_unlock(&dongle->mutex);
+			pthread_mutex_unlock(&c->table->dongle_mutex);
 			return (true);
 		}
 	}
-	pthread_mutex_unlock(&dongle->mutex);
+	pthread_mutex_unlock(&c->table->dongle_mutex);
 	return (false);
-}
-
-static void	release_one(t_dongle *dongle, long long now,
-		long long cooldown_time)
-{
-	pthread_mutex_lock(&dongle->mutex);
-	dongle->is_available = 1;
-	dongle->cooldown_until = now + cooldown_time;
-	pthread_cond_broadcast(&dongle->cond);
-	pthread_mutex_unlock(&dongle->mutex);
-}
-
-void	release_dongles(t_coder *coder)
-{
-	t_dongle	*dongles[2];
-	long long	now;
-	int			i;
-
-	dongles[0] = coder->left_dongle;
-	dongles[1] = coder->right_dongle;
-	now = get_current_time(coder->table);
-	if (dongles[0] == dongles[1])
-		release_one(dongles[0], now, coder->table->params.dongle_cooldown);
-	else
-	{
-		i = 0;
-		while (i < 2)
-		{
-			release_one(dongles[i], now, coder->table->params.dongle_cooldown);
-			i++;
-		}
-	}
-}
-
-static void	assign_dongles(t_coder *coder, t_dongle **first, t_dongle **second)
-{
-	if (coder->id % 2 == 1)
-	{
-		*first = coder->left_dongle;
-		*second = coder->right_dongle;
-	}
-	else
-	{
-		*first = coder->right_dongle;
-		*second = coder->left_dongle;
-	}
-	(void)first;
-	(void)second;
-}
-
-bool	acquire_both_dongles(t_coder *coder)
-{
-	t_dongle	*first;
-	t_dongle	*second;
-
-	if (coder->left_dongle->id == coder->right_dongle->id)
-	{
-		if (take_dongle(coder, coder->left_dongle))
-		{
-			while (!should_stop_now(coder->table))
-				usleep(500);
-			release_one(coder->left_dongle, get_current_time(coder->table),
-				coder->table->params.dongle_cooldown);
-		}
-		return (false);
-	}
-	assign_dongles(coder, &first, &second);
-	if (!take_dongle(coder, first))
-		return (false);
-	if (!take_dongle(coder, second))
-	{
-		release_one(first, get_current_time(coder->table),
-			coder->table->params.dongle_cooldown);
-		return (false);
-	}
-	return (true);
 }

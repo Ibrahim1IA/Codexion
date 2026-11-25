@@ -1,0 +1,16 @@
+*this project has been created as part of the 42 curriculum by <iissoufo>*
+# Codexion
+
+## Description
+
+
+## Instructions
+
+
+## Resources
+
+
+## Blocking cases handled
+
+
+## Thread synchronization mechanisms

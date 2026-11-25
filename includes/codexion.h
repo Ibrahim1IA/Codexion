@@ -6,7 +6,7 @@
 /*   By: iissoufo <iissoufo@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/11/23 17:57:00 by iissoufo          #+#    #+#             */
-/*   Updated: 2026/11/24 20:35:50 by iissoufo         ###   ########.fr       */
+/*   Updated: 2026/11/25 19:35:15 by iissoufo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -59,8 +59,6 @@ typedef struct s_dongle
 	int				id;
 	int				is_available;
 	long long		cooldown_until;
-	pthread_mutex_t	mutex;
-	pthread_cond_t	cond;
 	t_min_heap		waiting_queue;
 }					t_dongle;
 
@@ -82,6 +80,8 @@ typedef struct s_table
 	t_params		params;
 	long long		start_time;
 	int				simulation_ended;
+	pthread_mutex_t dongle_mutex;
+	pthread_cond_t dongle_cond;
 	pthread_mutex_t	end_mutex;
 	pthread_mutex_t	log_mutex;
 	pthread_mutex_t	start_mutex;
@@ -90,10 +90,7 @@ typedef struct s_table
 	pthread_t		monitor_thread;
 }					t_table;
 
-void				push_request(t_coder *coder, t_dongle *dongle);
-bool				try_acquire(t_coder *coder, t_dongle *dongle);
 int					init_dongles(t_table *table);
-bool				take_dongle(t_coder *coder, t_dongle *dongle);
 bool				acquire_both_dongles(t_coder *coder);
 void				release_dongles(t_coder *coder);
 void				destroy_dongles(t_table *table);
