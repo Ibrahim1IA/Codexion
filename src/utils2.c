@@ -6,7 +6,7 @@
 /*   By: iissoufo <iissoufo@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/11/24 08:48:21 by iissoufo          #+#    #+#             */
-/*   Updated: 2026/11/25 20:39:08 by iissoufo         ###   ########.fr       */
+/*   Updated: 2026/11/25 21:20:24 by iissoufo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -74,4 +74,21 @@ void	print_log(t_coder *coder, const char *message)
 	}
 	pthread_mutex_unlock(&coder->table->end_mutex);
 	pthread_mutex_unlock(&coder->table->log_mutex);
+}
+
+void	print_compile_start(t_coder *c)
+{
+	long long	t;
+
+	pthread_mutex_lock(&c->table->log_mutex);
+	pthread_mutex_lock(&c->table->end_mutex);
+	if (!c->table->simulation_ended)
+	{
+		t = get_current_time(c->table);
+		printf("%lld %d has taken a dongle\n", t, c->id);
+		printf("%lld %d has taken a dongle\n", t, c->id);
+		printf("%lld %d is compiling\n", t, c->id);
+	}
+	pthread_mutex_unlock(&c->table->end_mutex);
+	pthread_mutex_unlock(&c->table->log_mutex);
 }

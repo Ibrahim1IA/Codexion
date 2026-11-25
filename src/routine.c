@@ -6,7 +6,7 @@
 /*   By: iissoufo <iissoufo@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/11/22 12:27:12 by iissoufo          #+#    #+#             */
-/*   Updated: 2026/11/25 20:21:08 by iissoufo         ###   ########.fr       */
+/*   Updated: 2026/11/25 21:27:12 by iissoufo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,10 +32,6 @@ static void	precise_sleep(long long duration, t_table *table)
 
 static void	coder_compile(t_coder *coder)
 {
-	pthread_mutex_lock(&coder->coder_mutex);
-	coder->last_compile_start = get_current_time(coder->table);
-	pthread_mutex_unlock(&coder->coder_mutex);
-	print_log(coder, "is compiling");
 	precise_sleep(coder->table->params.time_to_compile, coder->table);
 	pthread_mutex_lock(&coder->coder_mutex);
 	coder->compiles_done++;

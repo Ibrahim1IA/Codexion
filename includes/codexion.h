@@ -6,7 +6,7 @@
 /*   By: iissoufo <iissoufo@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/11/23 17:57:00 by iissoufo          #+#    #+#             */
-/*   Updated: 2026/11/25 20:12:00 by iissoufo         ###   ########.fr       */
+/*   Updated: 2026/11/25 21:20:47 by iissoufo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -117,6 +117,7 @@ void				stop_simulation(t_table *table);
 
 long long			get_current_time(t_table *table);
 void				print_log(t_coder *coder, const char *message);
+void				print_compile_start(t_coder *c);
 int					should_stop_now(t_table *table);
 void				ft_swap(t_request *a, t_request *b);
 bool				is_higher_priority(t_request *a, t_request *b,

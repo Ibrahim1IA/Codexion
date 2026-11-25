@@ -6,7 +6,7 @@
 /*   By: iissoufo <iissoufo@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/11/24 09:02:37 by iissoufo          #+#    #+#             */
-/*   Updated: 2026/11/25 20:17:02 by iissoufo         ###   ########.fr       */
+/*   Updated: 2026/11/25 21:26:15 by iissoufo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,8 +39,10 @@ static void	take_both(t_coder *c)
 		c->table->params.scheduler_type);
 	c->left_dongle->is_available = 0;
 	c->right_dongle->is_available = 0;
-	print_log(c, "has taken a dongle");
-	print_log(c, "has taken a dongle");
+	pthread_mutex_lock(&c->coder_mutex);
+	c->last_compile_start = get_current_time(c->table);
+	pthread_mutex_unlock(&c->coder_mutex);
+	print_compile_start(c);
 }
 
 static bool	try_acquire_both(t_coder *c)
