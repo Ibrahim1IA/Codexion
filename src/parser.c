@@ -6,7 +6,7 @@
 /*   By: iissoufo <iissoufo@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/11/22 12:27:06 by iissoufo          #+#    #+#             */
-/*   Updated: 2026/11/24 20:17:35 by iissoufo         ###   ########.fr       */
+/*   Updated: 2026/11/26 02:53:23 by iissoufo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,6 +42,8 @@ int	is_valid_numbers(int ac, char **av)
 	i = 1;
 	while (i < (ac - 1))
 	{
+		if (av[i][0] == '\0')
+			return (1);
 		j = 0;
 		while (av[i][j])
 		{

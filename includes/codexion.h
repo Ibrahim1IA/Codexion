@@ -6,7 +6,7 @@
 /*   By: iissoufo <iissoufo@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/11/23 17:57:00 by iissoufo          #+#    #+#             */
-/*   Updated: 2026/11/25 21:20:47 by iissoufo         ###   ########.fr       */
+/*   Updated: 2026/11/26 01:30:59 by iissoufo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -81,7 +81,7 @@ typedef struct s_table
 	t_params		params;
 	long long		start_time;
 	int				simulation_ended;
-	pthread_mutex_t dongle_mutex;
+	pthread_mutex_t	dongle_mutex;
 	pthread_mutex_t	end_mutex;
 	pthread_mutex_t	log_mutex;
 	pthread_mutex_t	start_mutex;
@@ -112,9 +112,6 @@ void				clean_exit(t_table *table);
 void				join_coders(t_table *table, int count);
 void				free_all(t_table *table);
 void				stop_simulation(t_table *table);
-
-// Utils
-
 long long			get_current_time(t_table *table);
 void				print_log(t_coder *coder, const char *message);
 void				print_compile_start(t_coder *c);
